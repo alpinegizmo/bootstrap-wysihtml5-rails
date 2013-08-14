@@ -300,11 +300,12 @@
                   caretBookmark = null;
                 }
 
-                var newWindow = targetInput.prop("checked");
+                var cta = targetInput.prop("checked");
                 self.editor.composer.commands.exec("createLink", {
                     'href' : url,
-                    'target' : (newWindow ? '_blank' : '_self'),
-                    'rel' : (newWindow ? 'nofollow' : '')
+                    'target' : '_blank',
+                    'rel' : 'nofollow',
+                    'class' : (cta ? 'cta' : ''),
                 });
             };
             var pressedEnter = false;
@@ -483,7 +484,7 @@
             link: {
                 insert: "Insert link",
                 cancel: "Cancel",
-                target: "Open link in new window"
+                target: 'Make this link a "call to action" button'
             },
             image: {
                 insert: "Insert image",
