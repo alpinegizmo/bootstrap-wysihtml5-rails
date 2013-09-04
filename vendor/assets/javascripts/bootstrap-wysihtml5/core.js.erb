@@ -188,10 +188,14 @@
                         this.initHtml(toolbar);
                     }
 
-                    if(key === "link") {
+                    if(key === "emphasis") {
                         this.initInsertLink(toolbar);
                     }
-
+                    
+                    if(key === "link") {
+                        this.initInsertCTA(toolbar);
+                    }
+                    
                     if(key === "image") {
                         this.initInsertImage(toolbar);
                     }
@@ -282,7 +286,71 @@
             });
         },
 
+        initInsertCTA: function(toolbar) {
+          console.log('initInsertCTA');
+            var self = this;
+            var insertLinkModal = toolbar.find('.bootstrap-wysihtml5-insert-cta-modal');
+            var urlInput = insertLinkModal.find('.bootstrap-wysihtml5-insert-cta-url');
+            var targetInput = insertLinkModal.find('.bootstrap-wysihtml5-insert-cta-target');
+            var insertButton = insertLinkModal.find('a.btn-primary');
+            var initialValue = urlInput.val();
+            var caretBookmark;
+
+            var insertLink = function() {
+                var url = urlInput.val();
+                urlInput.val(initialValue);
+                self.editor.currentView.element.focus();
+                if (caretBookmark) {
+                  self.editor.composer.selection.setBookmark(caretBookmark);
+                  caretBookmark = null;
+                }
+
+                self.editor.composer.commands.exec("createLink", {
+                    'href' : url,
+                    'target' : '_blank',
+                    'rel' : 'nofollow',
+                    'class' : 'cta'
+                });
+            };
+            var pressedEnter = false;
+
+            urlInput.keypress(function(e) {
+                if(e.which == 13) {
+                    insertLink();
+                    insertLinkModal.modal('hide');
+                }
+            });
+
+            insertButton.click(insertLink);
+
+            insertLinkModal.on('shown', function() {
+                urlInput.focus();
+            });
+
+            insertLinkModal.on('hide', function() {
+                self.editor.currentView.element.focus();
+            });
+
+            toolbar.find('a[data-wysihtml5-command=createCTA]').click(function() {
+                var activeButton = $(this).hasClass("wysihtml5-command-active");
+
+                if (!activeButton) {
+                    self.editor.currentView.element.focus(false);
+                    caretBookmark = self.editor.composer.selection.getBookmark();
+                    insertLinkModal.appendTo('body').modal('show');
+                    insertLinkModal.on('click.dismiss.modal', '[data-dismiss="modal"]', function(e) {
+                        e.stopPropagation();
+                    });
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            });
+        },
+
         initInsertLink: function(toolbar) {
+          console.log('initInsertLink');
             var self = this;
             var insertLinkModal = toolbar.find('.bootstrap-wysihtml5-insert-link-modal');
             var urlInput = insertLinkModal.find('.bootstrap-wysihtml5-insert-link-url');
@@ -305,7 +373,7 @@
                     'href' : url,
                     'target' : '_blank',
                     'rel' : 'nofollow',
-                    'class' : (cta ? 'cta' : ''),
+                    'class' : ''
                 });
             };
             var pressedEnter = false;

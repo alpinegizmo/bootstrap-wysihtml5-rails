@@ -6978,6 +6978,8 @@ wysihtml5.Commands = Base.extend(
       return undef;
     }
   };
+  
+  wysihtml5.commands.createCTA = wysihtml5.commands.createLink;
 })(wysihtml5);/**
  * document.execCommand("fontSize") will create either inline styles (firefox, chrome) or use font tags
  * which we don't want
